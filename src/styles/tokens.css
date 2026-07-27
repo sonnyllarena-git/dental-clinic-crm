@@ -1,0 +1,18 @@
+/**
+ * Design tokens as CSS custom properties, expressed as "R G B" triplets so
+ * Tailwind's `rgb(var(--x) / <alpha-value>)` pattern can apply opacity
+ * modifiers (e.g. `bg-accent/10`) to every token.
+ */
+:root {
+  --surface-base: 255 255 255; /* #FFFFFF */
+  --surface-raised: 247 249 250; /* #F7F9FA */
+  --surface-sunken: 238 242 244; /* #EEF2F4 */
+  --border-hairline: 227 232 236; /* #E3E8EC */
+  --ink-primary: 18 36 46; /* #12242E */
+  --ink-secondary: 92 112 121; /* #5C7079 */
+  --accent: 15 118 110; /* #0F766E */
+  --accent-wash: 217 240 236; /* #D9F0EC */
+  --status-success: 21 128 61; /* #15803D */
+  --status-warning: 180 83 9; /* #B45309 */
+  --status-danger: 179 38 30; /* #B3261E */
+}
