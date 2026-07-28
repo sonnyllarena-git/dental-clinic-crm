@@ -1,6 +1,7 @@
 import { Lock } from 'lucide-react';
 import { DemoDataBadge } from './DemoDataBadge';
 import { RoleSwitcher } from './RoleSwitcher';
+import { ResetDemoDataButton } from './ResetDemoDataButton';
 import { Button } from '@/components/ui';
 import { useSessionStore } from '@/store/session.store';
 
@@ -12,6 +13,7 @@ export function TopBar() {
       <DemoDataBadge />
       <div className="flex items-center gap-2">
         <RoleSwitcher />
+        <ResetDemoDataButton />
         <Button
           variant="ghost"
           size="icon"

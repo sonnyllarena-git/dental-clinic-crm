@@ -1,47 +1,65 @@
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui';
-import { useWorkspaceStore } from '@/store/workspace.store';
+import { Link } from 'react-router-dom';
+import { usePatients, useReportMetrics } from '@/data/hooks';
+import { dateAtDayOffset, toIsoDate } from '@/data/demoClock';
+import { formatCurrency } from '@/lib/format';
+import { Skeleton } from '@/components/ui';
+
+const REPORT_RANGE = {
+  start: toIsoDate(dateAtDayOffset(-365)),
+  end: toIsoDate(dateAtDayOffset(30)),
+};
 
 /**
- * Seven sample charts — one more than MAX_OPEN_TABS — so opening all of
- * them demonstrates the "close a tab first" overflow guard, not just the
- * happy path. Real patient data and role-scoped KPIs land in Stage 3 / 6;
- * this page exists now to prove out the tabbed-workspace mechanics.
+ * Real seeded numbers now that the patient list/chart and data layer are
+ * wired up — but still not the actual role-scoped KPI dashboard (charts,
+ * per-role scoping, comparisons) the brief describes; that's Stage 6.
  */
-const DEMO_PATIENTS = [
-  { id: '3f2a1b10-8c44-4e2a-9d61-000000000001', label: 'Reyes, Ana' },
-  { id: '3f2a1b10-8c44-4e2a-9d61-000000000002', label: 'Okafor, Ben' },
-  { id: '3f2a1b10-8c44-4e2a-9d61-000000000003', label: 'Lindqvist, Cora' },
-  { id: '3f2a1b10-8c44-4e2a-9d61-000000000004', label: 'Mercado, Dee' },
-  { id: '3f2a1b10-8c44-4e2a-9d61-000000000005', label: 'Nakamura, Eli' },
-  { id: '3f2a1b10-8c44-4e2a-9d61-000000000006', label: 'Petrov, Faye' },
-  { id: '3f2a1b10-8c44-4e2a-9d61-000000000007', label: 'Quintero, Gus' },
-];
-
 export function DashboardPage() {
-  const openTab = useWorkspaceStore((s) => s.openTab);
-  const navigate = useNavigate();
-
-  const handleOpen = (id: string, label: string) => {
-    const result = openTab({ id, label });
-    if (result !== 'blocked') navigate(`/patients/${id}`);
-  };
+  const { data: patients, isLoading: patientsLoading } = usePatients();
+  const { data: metrics, isLoading: metricsLoading } = useReportMetrics(REPORT_RANGE);
+  const isLoading = patientsLoading || metricsLoading;
 
   return (
     <div className="p-6">
       <h1 className="font-heading text-xl font-semibold text-ink-primary">Dashboard</h1>
       <p className="mt-1 max-w-prose text-sm text-ink-secondary">
-        Role-scoped KPIs arrive in Stage 6. For now, use these sample charts to try the tabbed workspace —
-        open a few, switch between them with the arrow keys once a tab has focus, and try the 7th to see
-        the open-tab limit.
+        Full role-scoped KPIs and charts arrive in Stage 6. These are quick totals from the seeded data in
+        the meantime.
       </p>
-      <div className="mt-6 flex flex-wrap gap-2">
-        {DEMO_PATIENTS.map((p) => (
-          <Button key={p.id} variant="secondary" size="sm" onClick={() => handleOpen(p.id, p.label)}>
-            Open {p.label}
-          </Button>
-        ))}
+
+      <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
+        {isLoading ? (
+          <>
+            <Skeleton className="h-20 w-full" />
+            <Skeleton className="h-20 w-full" />
+            <Skeleton className="h-20 w-full" />
+            <Skeleton className="h-20 w-full" />
+          </>
+        ) : (
+          <>
+            <StatCard label="Total patients" value={String(patients?.length ?? 0)} />
+            <StatCard label="Appointments" value={String(metrics?.appointmentCount ?? 0)} />
+            <StatCard label="Show rate" value={`${metrics?.showRatePercent ?? 0}%`} />
+            <StatCard label="Revenue collected" value={formatCurrency(metrics?.totalRevenue ?? 0)} />
+          </>
+        )}
       </div>
+
+      <Link
+        to="/patients"
+        className="mt-6 inline-flex items-center gap-1.5 rounded-md border border-hairline bg-surface-raised px-3.5 py-2 text-sm font-medium text-ink-primary hover:bg-surface-sunken focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+      >
+        Go to Patients →
+      </Link>
+    </div>
+  );
+}
+
+function StatCard({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-md border border-hairline bg-surface-raised p-4">
+      <p className="text-xs text-ink-secondary">{label}</p>
+      <p className="mt-1 font-mono text-xl font-semibold text-ink-primary">{value}</p>
     </div>
   );
 }

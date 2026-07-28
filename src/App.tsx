@@ -1,10 +1,13 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AppShell } from '@/app/AppShell';
 import { IdleLock } from '@/app/IdleLock';
+import { ScenarioSwitcher } from '@/app/ScenarioSwitcher';
 import { RouteErrorBoundary } from '@/app/RouteErrorBoundary';
 import { SectionPlaceholder } from '@/app/placeholders/SectionPlaceholder';
 import { DashboardPage } from '@/features/dashboard/DashboardPage';
-import { PatientTabPage } from '@/features/patients/PatientTabPage';
+import { PatientListPage } from '@/features/patients/PatientListPage';
+import { PatientChartPage } from '@/features/patients/PatientChartPage';
+import { SchedulingPage } from '@/features/scheduling/SchedulingPage';
 
 export default function App() {
   return (
@@ -23,11 +26,7 @@ export default function App() {
             path="/patients"
             element={
               <RouteErrorBoundary label="Patients">
-                <SectionPlaceholder
-                  title="Patients"
-                  stage={3}
-                  description="Searchable, filterable patient list with the persistent safety banner and odontogram."
-                />
+                <PatientListPage />
               </RouteErrorBoundary>
             }
           />
@@ -35,7 +34,7 @@ export default function App() {
             path="/patients/:id"
             element={
               <RouteErrorBoundary label="Patient chart">
-                <PatientTabPage />
+                <PatientChartPage />
               </RouteErrorBoundary>
             }
           />
@@ -43,11 +42,7 @@ export default function App() {
             path="/schedule"
             element={
               <RouteErrorBoundary label="Schedule">
-                <SectionPlaceholder
-                  title="Schedule"
-                  stage={4}
-                  description="Multi-provider day/week/month calendar with drag-to-reschedule."
-                />
+                <SchedulingPage />
               </RouteErrorBoundary>
             }
           />
@@ -102,6 +97,7 @@ export default function App() {
         </Routes>
       </AppShell>
       <IdleLock />
+      <ScenarioSwitcher />
     </BrowserRouter>
   );
 }
